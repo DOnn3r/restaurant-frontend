@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_CURRENCY: ${CURRENCY:-MGA}
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: ${BACKEND_URL:-http://host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # accès au backend lancé sur la même machine (Linux)
+    ports:
+      - "${APP_PORT:-80}:80"

@@ -135,6 +135,28 @@ export default function Dashboard() {
                       </Box>
                     ))
                   )}
+                  {(data.discounts > 0 || data.tips > 0 || data.tax > 0) && (
+                    <Box sx={{ mt: 1.5, pt: 1.5, borderTop: `1px solid ${colors.line}` }}>
+                      {data.discounts > 0 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 0.25 }}>
+                          <Typography variant="body2" color="text.secondary">Remises accordées</Typography>
+                          <Typography variant="body2" color="text.secondary">{money(data.discounts)}</Typography>
+                        </Box>
+                      )}
+                      {data.tax > 0 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 0.25 }}>
+                          <Typography variant="body2" color="text.secondary">TVA incluse dans les ventes</Typography>
+                          <Typography variant="body2" color="text.secondary">{money(data.tax)}</Typography>
+                        </Box>
+                      )}
+                      {data.tips > 0 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 0.25 }}>
+                          <Typography variant="body2" color="text.secondary">Pourboires (hors ventes)</Typography>
+                          <Typography variant="body2" color="text.secondary">{money(data.tips)}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  )}
                 </Card>
                 <Card sx={{ p: 2.5 }}>
                   <Typography variant="h6" component="h2" sx={{ mb: 2 }}>Dépenses par catégorie</Typography>

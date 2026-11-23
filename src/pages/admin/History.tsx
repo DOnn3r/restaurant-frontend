@@ -17,7 +17,7 @@ export default function History() {
   const [to, setTo] = useState(() => ymd(new Date()));
   const { data, error, loading } = useFetch(() => get<Order[]>('/orders/history', { from, to }), [from, to]);
   const [open, setOpen] = useState<number | null>(null);
-  const total = data?.reduce((s, o) => s + o.total, 0) ?? 0;
+  const total = data?.reduce((s, o) => s + o.netTotal, 0) ?? 0;
 
   return (
     <>
@@ -47,8 +47,19 @@ export default function History() {
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>{o.paidAt ? dateTime(o.paidAt) : ''}</TableCell>
                       <TableCell>{o.tableLabel}</TableCell>
                       <TableCell>{o.serverName}</TableCell>
-                      <TableCell>{o.paymentMethod && <Chip size="small" label={PAYMENT_LABEL[o.paymentMethod]} sx={{ bgcolor: colors.greenSoft, color: colors.greenDark }} />}</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 700 }}>{money(o.total)}</TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                          {o.payments.map((p, k) => (
+                            <Chip key={k} size="small" sx={{ bgcolor: colors.greenSoft, color: colors.greenDark }}
+                                  label={o.payments.length > 1 ? `${PAYMENT_LABEL[p.method]} ${money(p.amount)}` : PAYMENT_LABEL[p.method]} />
+                          ))}
+                          {o.payments.length === 0 && <Chip size="small" label="Offerte" />}
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700 }}>
+                        {money(o.netTotal)}
+                        {o.tipAmount > 0 && <Typography variant="caption" component="div" color="text.secondary">+ {money(o.tipAmount)} pourboire</Typography>}
+                      </TableCell>
                       <TableCell align="right">
                         <IconButton onClick={() => setOpen(open === o.id ? null : o.id)} aria-expanded={open === o.id}
                                     aria-label={`Détail de la commande ${o.tableLabel}`}>
@@ -66,6 +77,18 @@ export default function History() {
                                 <Typography>{money(i.lineTotal)}</Typography>
                               </Box>
                             ))}
+                            {o.discountAmount > 0 && (
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 0.25 }}>
+                                <Typography color="text.secondary">Remise{o.discountReason ? ` (${o.discountReason})` : ''}</Typography>
+                                <Typography color="text.secondary">− {money(o.discountAmount)}</Typography>
+                              </Box>
+                            )}
+                            {o.taxAmount > 0 && (
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 0.25 }}>
+                                <Typography color="text.secondary">dont TVA {o.taxRate} %</Typography>
+                                <Typography color="text.secondary">{money(o.taxAmount)}</Typography>
+                              </Box>
+                            )}
                           </Box>
                         </Collapse>
                       </TableCell>

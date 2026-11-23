@@ -2,7 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Button, Card, Chip, IconButton, Typography } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import PrintIcon from '@mui/icons-material/Print';
 import { errMsg, get, http } from '../api';
+import { printKitchenTicket } from '../print';
 import EmptyState from '../components/EmptyState';
 import { ErrorBanner, Loading } from '../components/Loading';
 import PageHeader from '../components/PageHeader';
@@ -100,8 +102,13 @@ export default function Kitchen() {
                     <Typography variant="h5" component="h2">{t.tableLabel}</Typography>
                     <Typography variant="body2" color="text.secondary">Serveur : {t.serverName}</Typography>
                   </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <IconButton onClick={() => printKitchenTicket(t)} aria-label={`Imprimer le bon de ${t.tableLabel}`} size="small">
+                    <PrintIcon />
+                  </IconButton>
                   <Chip label={allReady ? 'À servir' : `${minutes} min`}
                         sx={late ? { bgcolor: colors.cassis, color: '#fff' } : allReady ? { bgcolor: colors.cassisSoft, color: colors.cassis } : { bgcolor: colors.greenSoft, color: colors.greenDark }} />
+                  </Box>
                 </Box>
 
                 {t.items.map((i) => (
